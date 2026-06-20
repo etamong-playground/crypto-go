@@ -1,10 +1,10 @@
-> Canonical: https://github.com/etamong-playground/crypto-go
+# crypto-go
 
-# @etamong-lab/crypto-go
+> **About** — One of several shared libraries behind a personal homelab "fleet" of small apps (error handling · audit logging · encryption-at-rest · i18n · UI · …). Published to show the **design decisions** behind these cross-cutting concerns. It is authored and maintained with [Claude Code](https://www.anthropic.com/claude-code) (Anthropic's agentic CLI), not hand-written.
+>
+> **This is a public repository** — keep internal infrastructure details (hostnames, secret/Vault paths, private URLs, internal issue/MR references) out of code, comments, README, and commit messages.
 
-The etamong-lab encryption standard ([[etamong_encryption_standard]]) as a Go
-library: **XChaCha20-Poly1305 + Vault KEK + per-row AAD**. Same primitives the
-reference impl in `pages/apiserver/crypto.go` ships today.
+Encryption-at-rest as a Go library: **XChaCha20-Poly1305 + KEK + per-row AAD**.
 
 Three guarantees the library enforces by construction:
 
@@ -26,7 +26,7 @@ go get github.com/etamong-playground/crypto-go
 ```go
 import "github.com/etamong-playground/crypto-go/crypto"
 
-c, err := crypto.New(os.Getenv("PAGES_ENCRYPTION_KEY"))   // base64 32-byte KEK
+c, err := crypto.New(os.Getenv("APP_ENCRYPTION_KEY"))   // base64 32-byte KEK
 if err != nil { return err }
 
 nonce, ct, err := c.Seal([]byte(token), fmt.Sprintf("%s|%s", owner, credID))
@@ -35,10 +35,8 @@ nonce, ct, err := c.Seal([]byte(token), fmt.Sprintf("%s|%s", owner, credID))
 plain, err := c.Open(nonce, ct, fmt.Sprintf("%s|%s", owner, credID))
 ```
 
-Wiring inside cluster apps: KEK comes from Vault (`homelab/apps/<app>/encryption`,
-`key=<base64>`); `vault-secrets-operator` projects it as an env var named
-`<APP>_ENCRYPTION_KEY`. Rotate by issuing a new KEK and re-wrapping rows
-(`crypto.Rewrap(old, new, nonce, ct, aad)` — see below).
+Provide the KEK as a base64 env var from your secret manager (e.g. `APP_ENCRYPTION_KEY`).
+Rotate by issuing a new KEK and re-wrapping rows (see `crypto.Rewrap` below).
 
 ## Rotation
 
@@ -53,6 +51,12 @@ batched migration job; KEK version lives in a sibling column on the row.
 
 - Hashing actors (`AnonID`) → that's in [`audit-go`](https://github.com/etamong-playground/audit-go).
 - TLS / certificate handling.
-- KEK lifecycle in Vault — operator concern.
+- KEK lifecycle management — operator concern.
 
-Relates to etamong-lab/planning#244 #248.
+## Acknowledgements
+
+Uses [`golang.org/x/crypto`](https://pkg.go.dev/golang.org/x/crypto) (BSD-3-Clause).
+
+## License
+
+MIT — see [LICENSE](LICENSE).
