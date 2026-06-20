@@ -1,3 +1,5 @@
+> Canonical: https://github.com/etamong-playground/crypto-go
+
 # @etamong-lab/crypto-go
 
 The etamong-lab encryption standard ([[etamong_encryption_standard]]) as a Go
@@ -16,15 +18,13 @@ Three guarantees the library enforces by construction:
 ## Install
 
 ```sh
-go get gitlab.com/etamong-lab/shared/libs/crypto-go
+go get github.com/etamong-playground/crypto-go
 ```
-
-Private module — consumers set `GOPRIVATE=gitlab.com/etamong-lab/*`.
 
 ## Use
 
 ```go
-import "gitlab.com/etamong-lab/shared/libs/crypto-go/crypto"
+import "github.com/etamong-playground/crypto-go/crypto"
 
 c, err := crypto.New(os.Getenv("PAGES_ENCRYPTION_KEY"))   // base64 32-byte KEK
 if err != nil { return err }
@@ -51,7 +51,7 @@ batched migration job; KEK version lives in a sibling column on the row.
 
 ## Out of scope
 
-- Hashing actors (`AnonID`) → that's in [`audit-go`](https://gitlab.com/etamong-lab/shared/libs/audit-go).
+- Hashing actors (`AnonID`) → that's in [`audit-go`](https://github.com/etamong-playground/audit-go).
 - TLS / certificate handling.
 - KEK lifecycle in Vault — operator concern.
 

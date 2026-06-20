@@ -1,4 +1,4 @@
-module gitlab.com/etamong-lab/shared/libs/crypto-go
+module github.com/etamong-playground/crypto-go
 
 go 1.23
 
